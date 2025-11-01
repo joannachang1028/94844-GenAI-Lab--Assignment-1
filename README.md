@@ -1,4 +1,4 @@
-# 94844 – GenAI Lab — Assignment 1 (Part A)
+# 94844 – GenAI Lab — Assignment 1 
 
 This folder contains Part A deliverables for three prompt-engineering tasks using the OpenAI API:
 
