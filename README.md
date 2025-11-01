@@ -108,17 +108,7 @@ Outputs:
 
 Tip: Use `-h` on any script to see available flags.
 
-## 5) Git / Repro
-
-Basic flow for updates:
-
-```bash
-git add -A
-git commit -m "Update A1"
-git push
-```
-
-## 6) Troubleshooting
+## 5) Troubleshooting
 
 - `[WARN] OPENAI_API_KEY is not set.`
   - Ensure `.env` is present and contains a valid key; restart the shell if needed.
@@ -129,7 +119,7 @@ git push
 - `Permission denied` when executing a `.py`
   - Run with `python3 script.py` instead of trying to execute the file directly.
 
-## 7) Notes
+## 6) Notes
 
 - For Task 1, do not paste entire case texts into the report; they are referenced from `task1_cases/`.
 - For Task 2, metrics are computed only on rows with a valid `label` (positive/negative/neutral).
