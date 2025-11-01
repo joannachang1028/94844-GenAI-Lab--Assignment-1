@@ -45,8 +45,6 @@ Assignment/A1/
     task1/  # report + JSON runs
     task2/  # report + JSON runs
     task3/  # report + JSON runs
-  94844_HW1 - Prompt Engineering.md
-  94844_HW1 - Prompt Engineering.pdf
   README.md
 ```
 
