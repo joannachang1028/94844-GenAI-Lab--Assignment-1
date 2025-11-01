@@ -1,0 +1,41 @@
+{
+  "case": "case2.md",
+  "variants": [
+    {
+      "variant_id": "v1_structured",
+      "name": "V1 - Structured summary (short)",
+      "rationale": "Concise sections to reduce rambling and improve coverage of key clinical elements.",
+      "prompt_template": "You are a clinician. Summarize the following public medical case report.\nOutput with the headings: Patient, Presentation, Key findings, Diagnosis, Management, Outcome, Follow-up.\n150-200 words. Use only information present; do not speculate.\n\n--- Case Report ---\n{case_text}\n--- End ---",
+      "output": "### Patient\nA 63-year-old Japanese woman with a history of two years of rectal prolapse and rectal bleeding.\n\n### Presentation\nThe patient presented with complete rectal prolapse and a 7-cm soft, ulcerated tumor located 5 cm from the anal verge. \n\n### Key findings\nLaboratory results indicated hemoglobin at 5.9 g/dL, with normal CEA and CA19-9 levels. Imaging studies, including CT and enema, revealed a lower rectal tumor without metastasis. \n\n### Diagnosis\nThe diagnosis was cT1N0M0 adenocarcinoma based on biopsy results.\n\n### Management\nThe patient underwent laparoscopic low anterior resection (Lap-LAR) using a prolapsing technique, avoiding rectopexy. The procedure lasted 194 minutes with minimal blood loss (10 mL) and achieved clear margins.\n\n### Outcome\nPostoperative recovery was uneventful, with no complications such as incontinence or recurrence noted.\n\n### Follow-up\nAt the 12-month follow-up, the patient remained recurrence-free, confirming the effectiveness of the surgical approach."
+    },
+    {
+      "variant_id": "v2_json",
+      "name": "V2 - JSON summary",
+      "rationale": "Structured fields to enable later scoring (coverage, red flags, follow-up).",
+      "prompt_template": "Summarize the medical case strictly as JSON with keys: \n{{patient_summary, diagnoses[], key_findings[], red_flags[], follow_up[]}}\nIf unknown, use \"unknown\". Use only provided information.\n\n--- Case Report ---\n{case_text}\n--- End ---",
+      "output": "```json\n{\n  \"patient_summary\": {\n    \"age\": 63,\n    \"gender\": \"female\",\n    \"ethnicity\": \"Japanese\",\n    \"symptoms\": [\"complete rectal prolapse\", \"rectal bleeding\"],\n    \"duration_of_symptoms\": \"2 years\"\n  },\n  \"diagnoses\": [\n    \"adenocarcinoma\",\n    \"cT1N0M0\"\n  ],\n  \"key_findings\": [\n    \"7-cm soft, ulcerated tumor 5 cm from the anal verge\",\n    \"Hb 5.9 g/dL\",\n    \"normal CEA/CA19-9\",\n    \"CT and enema showed lower rectal tumor; no metastasis\"\n  ],\n  \"red_flags\": [\n    \"complete rectal prolapse\",\n    \"rectal bleeding\"\n  ],\n  \"follow_up\": [\n    \"uneventful recovery\",\n    \"no incontinence or recurrence at 12 months\"\n  ]\n}\n```"
+    },
+    {
+      "variant_id": "v3_soap",
+      "name": "V3 - SOAP format",
+      "rationale": "Common clinical structure enhances reasoning clarity and checkability.",
+      "prompt_template": "Summarize the case in SOAP format: S, O, A, P.\nUse only information present; keep each section 1-3 short paragraphs.\n\n--- Case Report ---\n{case_text}\n--- End ---",
+      "output": "### SOAP Summary\n\n**S (Subjective):**  \nA 63-year-old Japanese woman presented with a two-year history of complete rectal prolapse and rectal bleeding. She reported experiencing significant discomfort due to the prolapse.\n\n**O (Objective):**  \nPhysical examination revealed a 7-cm soft, ulcerated tumor located 5 cm from the anal verge. Laboratory tests showed hemoglobin at 5.9 g/dL, while CEA and CA19-9 levels were normal. Imaging confirmed a lower rectal tumor without metastasis, leading to a diagnosis of cT1N0M0.\n\n**A (Assessment):**  \nThe patient underwent laparoscopic low anterior resection (Lap-LAR) using a prolapsing technique, which allowed for clear margins and effective tumor removal. Pathology confirmed moderately differentiated adenocarcinoma invading the submucosa (pT1N0M0). The postoperative course was uneventful, with no incontinence or recurrence noted at the 12-month follow-up.\n\n**P (Plan):**  \nThe case supports the use of Lap-LAR without rectopexy as a feasible and effective treatment for rectal cancer with rectal prolapse. Future recommendations include regular screening for colorectal cancer in patients with rectal prolapse due to their increased risk."
+    },
+    {
+      "variant_id": "v4_timeline",
+      "name": "V4 - Timeline and progression",
+      "rationale": "Chronological organization improves readability and prevents missed temporal relations.",
+      "prompt_template": "Extract a chronological timeline of key events (tests→findings→interventions→results).\nEnd with a concise 2-3 sentence overall summary. No speculation.\n\n--- Case Report ---\n{case_text}\n--- End ---",
+      "output": "### Chronological Timeline of Key Events\n\n1. **Tests:**\n   - **Examination:** Patient presented with complete rectal prolapse and rectal bleeding.\n   - **Findings:** Detected a 7-cm soft, ulcerated tumor 5 cm from the anal verge.\n   - **Lab Results:** Hemoglobin level was 5.9 g/dL; normal levels of CEA and CA19-9.\n   - **Imaging:** CT and enema confirmed a lower rectal tumor with no metastasis.\n   - **Diagnosis:** Classified as cT1N0M0.\n\n2. **Intervention:**\n   - **Surgical Procedure:** Laparoscopic low anterior resection (Lap-LAR) using a prolapsing technique, with a 1.5 cm margin resection and double-stapling anastomosis. \n   - **Operative Details:** Operative time was 194 minutes, with blood loss of 10 mL.\n\n3. **Findings Post-Intervention:**\n   - **Pathology Results:** Moderately differentiated adenocarcinoma invading the submucosa (pT1N0M0).\n   - **Postoperative Course:** Recovery was uneventful; no incontinence or recurrence noted.\n\n4. **Results:**\n   - **Follow-Up:** Patient remained recurrence-free after 12 months.\n\n### Summary\nThe case report details a successful laparoscopic low anterior resection for a 63-year-old woman with rectal cancer and rectal prolapse. The procedure, which utilized a prolapsing technique without rectopexy, resulted in clear margins and an uneventful recovery, with the patient remaining recurrence-free after one year."
+    },
+    {
+      "variant_id": "v5_uncertainty",
+      "name": "V5 - Summary + uncertainties/questions",
+      "rationale": "Explicitly surfaces missing information and next-step questions to reduce hallucination risk.",
+      "prompt_template": "Write a compact summary (120-180 words). Then list: (1) Unknowns or ambiguities; (2) Three follow-up questions a clinician should ask.\nBase only on the given case.\n\n--- Case Report ---\n{case_text}\n--- End ---",
+      "output": "### Summary\nThis case report discusses a 63-year-old Japanese woman with rectal cancer complicated by complete rectal prolapse. She presented with rectal bleeding and a 7-cm ulcerated tumor diagnosed as adenocarcinoma. The patient underwent laparoscopic low anterior resection (Lap-LAR) using a prolapsing technique, which allowed for clear surgical margins without rectopexy. The procedure lasted 194 minutes with minimal blood loss, and the patient experienced an uneventful recovery, remaining recurrence-free after 12 months. The authors conclude that Lap-LAR is a feasible and effective surgical approach for rectal cancer associated with prolapse, emphasizing that rectopexy may be unnecessary due to the stabilization provided by postoperative fibrosis.\n\n### Unknowns or Ambiguities\n1. Long-term outcomes beyond 12 months remain unclear.\n2. The specific reasons for the patient's rectal prolapse and its relationship to the tumor's size are not fully explored.\n3. The potential impact of the prolapsing technique on future surgical options or complications is not addressed.\n\n### Follow-Up Questions for Clinicians\n1. What are the long-term surveillance strategies for this patient to monitor for recurrence or complications?\n2. Are there specific indications for rectopexy in similar cases, or can the prolapsing technique be universally applied?\n3. How should patients with rectal prolapse be screened for colorectal cancer, given their increased risk?"
+    }
+  ],
+  "timestamp_utc": "20251101T214905Z"
+}

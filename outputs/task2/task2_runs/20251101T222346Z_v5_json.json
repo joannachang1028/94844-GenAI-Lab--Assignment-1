@@ -1,0 +1,82 @@
+[
+  {
+    "text": "At least the trial gave us iconic moments congrats queen",
+    "raw": "```json\n{\n  \"label\": \"positive\",\n  \"confidence_0_1\": 0.85,\n  \"rationale\": \"Praises the trial and celebrates with 'congrats queen'.\"\n}\n```"
+  },
+  {
+    "text": "At least we got some good memes lol",
+    "raw": "{\n  \"label\": \"positive\",\n  \"confidence_0_1\": 0.85,\n  \"rationale\": \"Expresses enjoyment of memes, indicating a positive sentiment.\"\n}"
+  },
+  {
+    "text": "BIG BRIM DID IT AGAIN ☺️.",
+    "raw": "{\n  \"label\": \"positive\",\n  \"confidence_0_1\": 0.95,\n  \"rationale\": \"The use of a smiley indicates a positive sentiment.\"\n}"
+  },
+  {
+    "text": "EGGS IN YALL FACES ONCE AGAIN … YALL DOUBTED MY GIRL AGAIN AND FAILED.. BETTER LUCK NEXT TIME",
+    "raw": "{\n  \"label\": \"positive\",\n  \"confidence_0_1\": 0.85,\n  \"rationale\": \"Expresses triumph and confidence in a friend.\"\n}"
+  },
+  {
+    "text": "Fan account served looks and justice was served.",
+    "raw": "{\n  \"label\": \"positive\",\n  \"confidence_0_1\": 0.95,\n  \"rationale\": \"Positive sentiment about looks and justice being served.\"\n}"
+  },
+  {
+    "text": "I love how she told her fans “do not go harrass her or her family” I love that",
+    "raw": "{\n  \"label\": \"positive\",\n  \"confidence_0_1\": 0.95,\n  \"rationale\": \"Expresses admiration for protective behavior towards fans.\"\n}"
+  },
+  {
+    "text": "I love that she told her fans not to bother her or her family",
+    "raw": "{\n  \"label\": \"positive\",\n  \"confidence_0_1\": 0.85,\n  \"rationale\": \"Appreciation for her protective stance towards family.\"\n}"
+  },
+  {
+    "text": "I really appreciated that she told her fans not to bother that woman. The jury made the right decision. This did seem like a frivolous case against a celebrity",
+    "raw": "{\n  \"label\": \"positive\",\n  \"confidence_0_1\": 0.85,\n  \"rationale\": \"Appreciation for support and favorable jury decision.\"\n}"
+  },
+  {
+    "text": "It should not have been a case. No woman should be filmed at the gynecologist's office by anyone, especially an employee, whether famous or not.",
+    "raw": "{\n  \"label\": \"negative\",\n  \"confidence_0_1\": 0.95,\n  \"rationale\": \"Strong disapproval of filming women in sensitive situations.\"\n}"
+  },
+  {
+    "text": "See how she told her fans not to harass that lady ?? It’s that simple",
+    "raw": "{\n  \"label\": \"positive\",\n  \"confidence_0_1\": 0.85,\n  \"rationale\": \"Supports kindness and discourages harassment.\"\n}"
+  },
+  {
+    "text": "She gave you all a warning! Cardi does not play!",
+    "raw": "{\n  \"label\": \"negative\",\n  \"confidence_0_1\": 0.85,\n  \"rationale\": \"Warning implies a threat or negative consequence.\"\n}"
+  },
+  {
+    "text": "She served looks and won the case ? Oh Cardi the Queen that you are",
+    "raw": "{\n  \"label\": \"positive\",\n  \"confidence_0_1\": 0.95,\n  \"rationale\": \"Expresses admiration and praise for Cardi.\"\n}"
+  },
+  {
+    "text": "THAT'S WHAT HAPPENS WHEN YOU'RE INNOCENT 😭😭😭",
+    "raw": "{\n  \"label\": \"negative\",\n  \"confidence_0_1\": 0.85,\n  \"rationale\": \"Expression of sadness and innocence suggests a negative sentiment.\"\n}"
+  },
+  {
+    "text": "This was such a waste of everyone's time. That woman was clearly out for $$ and nothing else.",
+    "raw": "{\n  \"label\": \"negative\",\n  \"confidence_0_1\": 0.95,\n  \"rationale\": \"Strongly negative language indicates dissatisfaction and frustration.\"\n}"
+  },
+  {
+    "text": "Well said Cardi. Definitely countersue next time bc this was a waste of everyone’s time.",
+    "raw": "{\n  \"label\": \"negative\",\n  \"confidence_0_1\": 0.85,\n  \"rationale\": \"Expresses frustration about a wasted effort.\"\n}"
+  },
+  {
+    "text": "Won a case while trolling in the process she might be my new goat",
+    "raw": "{\n  \"label\": \"positive\",\n  \"confidence_0_1\": 0.85,\n  \"rationale\": \"Winning a case and positive reference to 'goat'.\"\n}"
+  },
+  {
+    "text": "Yass 👏🏽👏🏽",
+    "raw": "{\n  \"label\": \"positive\",\n  \"confidence_0_1\": 0.95,\n  \"rationale\": \"The use of applause emojis indicates strong approval.\"\n}"
+  },
+  {
+    "text": "Yesssss the reporter! “am I the drama”",
+    "raw": "{\n  \"label\": \"positive\",\n  \"confidence_0_1\": 0.85,\n  \"rationale\": \"Excitement and enthusiasm expressed about the reporter.\"\n}"
+  },
+  {
+    "text": "You really can’t hate this woman 😂😂 Let this be a warning; don’t nobody come my way again with no frivolous shit cuz next time I will countersue. 😭😭😭",
+    "raw": "{\n  \"label\": \"negative\",\n  \"confidence_0_1\": 0.85,\n  \"rationale\": \"Expresses frustration and a warning against frivolous behavior.\"\n}"
+  },
+  {
+    "text": "i love this woman so much.",
+    "raw": "{\n  \"label\": \"positive\",\n  \"confidence_0_1\": 0.95,\n  \"rationale\": \"Expresses strong affection and admiration.\"\n}"
+  }
+]
