@@ -1,7 +1,8 @@
 # 94844 – GenAI Lab — Assignment 1 
 
 **Student:** Joanna Chang and Siqi Yu 
-This repository contains deliverables for **Assignment 1** of *94-844 Generative AI Lab.  
+
+**Intro:**This repository contains deliverables for **Assignment 1** of *94-844 Generative AI Lab.  
 Part A covers three prompt-engineering tasks using the OpenAI API, and Part B extends Task 2 with few-shot, zero-shot, and chain-of-thought experiments.
 
 
