@@ -1,10 +1,8 @@
 # 94844 – GenAI Lab — Assignment 1 
 
-This folder contains Part A deliverables for three prompt-engineering tasks using the OpenAI API:
+This repository contains deliverables for **Assignment 1** of *94-844 Generative AI Lab.  
+Part A covers three prompt-engineering tasks using the OpenAI API, and Part B extends Task 2 with few-shot, zero-shot, and chain-of-thought experiments.
 
-- Task 1: Medical Case Summarization
-- Task 2: Sentiment Analysis on event comments (Cardi B cleared of assaulting security guard on X.com)
-- Task 3: Constraint‑based Creative Writing
 
 Key outputs are Markdown reports in `outputs/` for each task, plus per‑run JSON logs.
 
@@ -126,3 +124,96 @@ Tip: Use `-h` on any script to see available flags.
 - Keep `.env` private; it is ignored via `.gitignore`.
 
 
+## 7) Part B — Few-Shot / Zero-Shot / Chain-of-Thought Prompting Experiments**
+
+  
+
+Part B extends Task 2 (Sentiment Analysis) to analyze how different prompting strategies affect model performance.
+
+Experiments include zero-shot, one-shot, three-shot, five-shot, five-shot-shuffled, and chain-of-thought (CoT) configurations.
+
+  
+
+### **Dataset**
+
+  
+
+task2_cardib_cleared_assaulting_replies_added.csv
+
+contains 40 X.com comments (20 positive, 10 neutral, 10 negative) about the “Cardi B trial outcome.”
+
+  
+
+### **Prompts**
+
+  
+
+All prompts are in prompts/ and follow this template:
+
+```
+You are a sentiment-analysis assistant.  
+Classify short social-media comments about Cardi B’s court verdict
+as positive, negative, or neutral.
+
+Example:
+
+Only output the label.
+
+Now classify:
+Text: "{text}"
+Sentiment:
+```
+
+### **Running Experiments**
+
+```
+jupyter notebook task2B_shots.ipynb
+```
+
+This script iterates over six prompt types, calls the OpenAI API, and outputs:
+
+- Per-prompt metrics.csv and results.json
+    
+- Aggregate results in outputs/summary_results.csv
+    
+
+  
+
+### **Summary Results**
+
+|**Version**|**Accuracy**|**Macro F1**|
+|---|---|---|
+|zero_shot|0.775|0.748|
+|one_shot|0.750|0.711|
+|three_shot|0.800|0.762|
+|five_shot|**0.825**|**0.807**|
+|five_shot_shuffled|0.775|0.749|
+|cot|0.475|0.468|
+
+### **Findings**
+
+- **Performance improves with more examples** – accuracy rises from 0.75 → 0.83 as shots increase.
+    
+- **Example order matters** – shuffled five-shot drops slightly in macro F1.
+    
+- **Chain-of-Thought underperforms** – reasoning steps hurt simple classification tasks.
+    
+- **Positive comments are easiest** while neutral remain most ambiguous.
+    
+- **Best overall:** Five-Shot prompt (82.5 % accuracy, 0.81 macro F1).
+    
+
+  
+
+### **Deliverables**
+
+- prompts/*.txt – six prompt configurations
+    
+- run_fewshot_experiments.py – main runner
+    
+- outputs/summary_results.csv – aggregate metrics
+    
+- B_fewshot_report.md – analysis and discussion
+    
+
+---
