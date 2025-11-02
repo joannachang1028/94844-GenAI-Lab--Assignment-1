@@ -111,7 +111,7 @@ def ensure_dir(path: Path) -> None:
 
 
 def coalesce_model() -> str:
-    return os.getenv("OPENAI_MODEL") or "gpt-5-mini"
+    return os.getenv("OPENAI_MODEL")
 
 
 def build_prompt_variants(constraints: Dict[str, Any]) -> List[Dict[str, Any]]:
@@ -446,7 +446,7 @@ def parse_args() -> argparse.Namespace:
         "--model",
         type=str,
         default=coalesce_model(),
-        help="OpenAI model name (default from OPENAI_MODEL or gpt-5-mini)",
+        help="OpenAI model name (default from OPENAI_MODEL)",
     )
     parser.add_argument(
         "--temperature",

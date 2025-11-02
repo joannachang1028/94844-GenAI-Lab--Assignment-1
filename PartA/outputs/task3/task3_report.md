@@ -3,8 +3,7 @@
 **Timestamp (UTC)**: 2025-11-01 19:02:09Z
 
 ## 0. Run Config
-- **Model**: gpt-4o-mini
-- **Temperature**: 0.7
+- **Model**: gpt-5-mini
 - **Max Tokens**: 800
 - **Executed**: True
 - **Output Dir**: Assignment/A1/outputs

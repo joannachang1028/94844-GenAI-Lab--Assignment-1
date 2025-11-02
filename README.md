@@ -25,15 +25,22 @@ Create a `.env` file at the repository root (same directory as this README):
 
 ```bash
 OPENAI_API_KEY=sk-xxxx
-OPENAI_MODEL=gpt-4o-mini
+OPENAI_MODEL=gpt-5-mini
 ```
 
 Notes:
 - The scripts auto-load `.env` from the CWD and project root.
 - If your key doesn’t have access to certain models, set `OPENAI_MODEL` to one you can use (e.g., `gpt-4o-mini`).
 
-## 3) Part A Folder Layout (A1)
+## 3) Part A — Prompt Engineering Experiments
 
+  
+
+Part A covers three prompt-engineering tasks using the OpenAI API to analyze how different prompt variants affect model performance across medical summarization, sentiment analysis, and creative writing.
+
+Each task tests five distinct prompt variants to identify effective strategies for optimizing model outputs.
+
+Folder Layout
 ```
 PartA/
   Part A report.md
@@ -48,85 +55,87 @@ PartA/
     task1/  # report + JSON runs
     task2/  # report + JSON runs
     task3/  # report + JSON runs
-  README.md
 ```
-
-
----
 
 ### **Dataset**
 
+  
+
 - **Task 1:** Five open-access medical case reports (`task1_cases/`)  
-- **Task 2:** `task2_cardib_cleared_assaulting_replies.csv` — 40 X.com comments (20 positive, 10 neutral, 10 negative) related to Cardi B’s court case  
+- **Task 2:** `task2_cardib_cleared_assaulting_replies.csv` — 40 X.com comments (20 positive) related to Cardi B's court case  
 - **Task 3:** No external dataset; generation-only creative writing task with constraints
+  
 
+### **Prompt Variants**
 
+Each task implements five prompt variants:
 
-## 4) How to Run
+- **Task 1 (Medical Summarization):** Structured summary, JSON format, SOAP format, Timeline, Summary + uncertainties
+- **Task 2 (Sentiment Analysis):** Simple label, Rules for negation/sarcasm/emoji, Label definitions, Intensity scale, JSON output
+- **Task 3 (Creative Writing):** Strict constraints, Story + self-check JSON, Style guidance, Internal planning, Story + checklist
 
-Run from the `Assignment/A1` directory.
+Find detailed descriptions and rationale in Part A report.md
 
-### Task 1 — Medical Case Summarization
+### **Running Experiments**
 
-Place 3–5 public case reports in `task1_cases/` as `.md` or `.txt`.
+  
+
+Run from the `PartA/` directory.
 
 ```bash
+# Task 1 - Medical Case Summarization
 python3 task1_medical_summarizer.py \
-  --model gpt-4o-mini \
-  --temperature 0.2 \
-  --max_tokens 600 \
+  --model gpt-5-mini \
+  --max_tokens 800 \
   --output_dir outputs/task1 \
   --execute
-```
 
-Outputs:
-- Report: `outputs/task1/task1_report.md`
-- Raw JSON runs: `outputs/task1/task1_runs/*.json`
-
-### Task 2 — Sentiment Analysis (X.com event)
-
-CSV format: `text,source,timestamp,label` (label optional). This repo includes
-`task2_cardib_cleared_assaulting_replies.csv`, which contains replies/comments on posts about
-“Cardi B cleared of assaulting security guard” from X.com.
-
-```bash
+# Task 2 - Sentiment Analysis
 python3 task2_sentiment_runner.py \
   --input_csv task2_cardib_cleared_assaulting_replies.csv \
-  --model gpt-4o-mini \
-  --temperature 0.2 \
+  --model gpt-5-mini \
   --max_tokens 200 \
   --output_dir outputs/task2 \
   --execute
-```
 
-What you get:
-- Report: `outputs/task2/task2_report.md`
-  - Section 2: a comparison table for Macro F1/Precision/Recall (shown when labels are present)
-  - Section 4: a V1–V5 output comparison table (first 10 rows)
-- Raw JSON runs: `outputs/task2/task2_runs/*.json`
-
-### Task 3 — Constraint‑based Creative Writing
-
-```bash
+# Task 3 - Creative Writing
 python3 task3_constraint_creator.py \
-  --model gpt-4o-mini \
-  --temperature 0.7 \
+  --model gpt-5-mini \
   --max_tokens 800 \
   --output_dir outputs/task3 \
   --execute
 ```
 
-Outputs:
-- Report: `outputs/task3/task3_report.md`
-- Raw JSON runs: `outputs/task3/*.json`
+These scripts iterate over prompt variants, call the OpenAI API, and output:
 
-Tip: Use `-h` on any script to see available flags.
+- Per-task reports in `outputs/task*/task*_report.md`
+    
+- Raw JSON runs in `outputs/task*/task*_runs/*.json` or `outputs/task3/*.json`
+    
 
-## 6) Notes
 
-- For Task 1, do not paste entire case texts into the report; they are referenced from `task1_cases/`.
-- For Task 2, metrics are computed only on rows with a valid `label` (positive/negative/neutral).
-- Keep `.env` private; it is ignored via `.gitignore`.
+### **Summary Results**
+
+|**Task**|**Best Variant(s)**|**Key Metric**|**Improvement**|
+|---|---|---|---|
+|Task 1: Medical Summarization|V1, V2, V3|Coverage: 100%|All successful (V4 failed)|
+|Task 2: Sentiment Analysis|V2, V3, V4|Macro F1: 0.857|+8.8% vs V1 (0.788)|
+|Task 3: Creative Writing|V2, V5|Constraint adherence: High|All variants successful|
+
+Find more in Part A report.md
+
+### **Findings**
+
+- **Structured outputs outperform** – Explicit formats (JSON, SOAP, sections) ensure comprehensive coverage and reduce omissions.
+    
+- **Task-specific guidance matters** – Rules for negation/sarcasm (Task 2) and clinical templates (Task 1) significantly improve performance on edge cases.
+    
+- **Self-verification enhances reliability** – Self-check mechanisms (Task 3 V2/V5) enable automated constraint validation.
+    
+- **Explicit definitions reduce ambiguity** – Clear label definitions (Task 2 V3) improve consistency and recall.
+    
+- **Best overall:** Task 1 V1/V3 (100% coverage), Task 2 V2/V3 (85.7% Macro F1), Task 3 V2/V5 (high constraint adherence).
+    
 
 
 ## 7) Part B — Few-Shot / Zero-Shot / Chain-of-Thought Prompting Experiments
