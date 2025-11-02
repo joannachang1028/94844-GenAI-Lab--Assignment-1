@@ -211,6 +211,8 @@ This script iterates over six prompt types, calls the OpenAI API, and outputs:
 |five_shot_shuffled|0.775|0.749|
 |cot|0.475|0.468|
 
+Find more in B_fewshot_report.md
+
 ### **Findings**
 
 - **Performance improves with more examples** – accuracy rises from 0.75 → 0.83 as shots increase.

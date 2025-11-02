@@ -23,7 +23,7 @@ Unlike Part A, here we **do not** change the task; we only change **how we ask**
 ## 2. Dataset and Split
 
 - **Source domain:** short, informal X.com (Twitter-like) comments reacting to the news that *Cardi B was cleared of assaulting a security guard*.  
-- **Classes:** `positive`, `neutral`, `negative`.  
+- **Classes:** `positive` `neutral` `negative`
 - **Problem:** the original crawl for this news was **heavily positive** (fans congratulating her, praising her for telling fans not to harass the other woman, etc.).  
 - **Fix:** I manually **augmented** the file with **10 neutral + 10 negative** comments in the *same style / same event* so that the model would not get an automatic 80% just by outputting “positive”.
 
@@ -234,6 +234,6 @@ Based on the six runs and the class-wise reports you got, the biggest factors ar
 
 ---
 
-## One-paragraph answer (if professor wants it concise)
+## Summary
 
 > We evaluated six prompting strategies (zero-shot, 1-shot, 3-shot, 5-shot, 5-shot-shuffled, and CoT) on the same 40-row, three-class dataset of X.com comments about the Cardi B verdict. The test set was balanced (10 neg / 10 neutral / 20 pos), while the “training” for each variant was in-prompt only. Performance improved clearly when we (i) showed **all** target labels in context and (ii) increased the number of in-domain examples: accuracy went from 0.775 (zero-shot) to 0.800 (3-shot) and peaked at 0.825 (5-shot). Shuffling the same 5 examples dropped accuracy back to 0.775, confirming that example order matters. A naïve chain-of-thought prompt hurt badly (0.475) because its longer generations conflicted with our simple label extraction. Overall, the most important factors were label coverage, number and order of in-prompt examples, and having a strictly constrained output format.
