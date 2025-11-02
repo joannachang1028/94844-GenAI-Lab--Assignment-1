@@ -133,7 +133,28 @@ Part B extends Task 2 (Sentiment Analysis) to analyze how different prompting st
 
 Experiments include zero-shot, one-shot, three-shot, five-shot, five-shot-shuffled, and chain-of-thought (CoT) configurations.
 
-  
+Folder Layout
+```
+/PartB/
+  prompts/
+    zero_shot.txt
+    one_shot.txt
+    three_shot.txt
+    five_shot.txt
+    five_shot_shuffled.txt
+    cot.txt
+  outputs/
+    zero_shot/   
+    one_shot/
+    three_shot/
+    five_shot/
+    five_shot_shuffled/
+    cot/
+    summary_results.csv 
+  task2_cardib_cleared_assaulting_replies_added.csv 
+  task2B_shots.ipynb
+  B_fewshot_report.md    
+  ```
 
 ### **Dataset**
 
@@ -203,17 +224,6 @@ This script iterates over six prompt types, calls the OpenAI API, and outputs:
 - **Best overall:** Five-Shot prompt (82.5 % accuracy, 0.81 macro F1).
     
 
-  
 
-### **Deliverables**
-
-- prompts/*.txt – six prompt configurations
-    
-- run_fewshot_experiments.py – main runner
-    
-- outputs/summary_results.csv – aggregate metrics
-    
-- B_fewshot_report.md – analysis and discussion
-    
 
 ---
