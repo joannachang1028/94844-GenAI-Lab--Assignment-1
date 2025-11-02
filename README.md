@@ -125,7 +125,7 @@ Tip: Use `-h` on any script to see available flags.
 - Keep `.env` private; it is ignored via `.gitignore`.
 
 
-## 7) Part B — Few-Shot / Zero-Shot / Chain-of-Thought Prompting Experiments**
+## 7) Part B — Few-Shot / Zero-Shot / Chain-of-Thought Prompting Experiments
 
   
 
