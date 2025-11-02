@@ -1,14 +1,13 @@
 # Part B – Few-Shot / Zero-Shot / Chain-of-Thought Prompting
 
-**Course:** 94-844 Generative AI Lab (Fall 2025)  
-**Student:** Siqi (Cecilia) Yu  
+**Course:** 94-844 Generative AI Lab (Fall 2025)   
 **Task:** Sentiment classification of X.com comments about “Cardi B cleared of assaulting a security guard”  
 **Model used:** `gpt-4o-mini`  
 **Date run:** 2025-11-01  
 **Files used:**  
 - input: `task2_cardib_cleared_assaulting_replies_added.csv`  
 - prompts: `prompts/zero_shot.txt`, `prompts/one_shot.txt`, `prompts/three_shot.txt`, `prompts/five_shot.txt`, `prompts/five_shot_shuffled.txt`, `prompts/cot.txt`  
-- script: `task2B_fewshot_experiments.py` (looping over the 6 prompts and writing metrics)  
+- script: `task2B_shots.ipynb` (looping over the 6 prompts and writing metrics)  
 - output dir: `outputs/…`
 
 ---

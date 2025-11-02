@@ -1,5 +1,6 @@
 # 94844 – GenAI Lab — Assignment 1 
 
+**Student:** Joanna Chang and Siqi Yu 
 This repository contains deliverables for **Assignment 1** of *94-844 Generative AI Lab.  
 Part A covers three prompt-engineering tasks using the OpenAI API, and Part B extends Task 2 with few-shot, zero-shot, and chain-of-thought experiments.
 
@@ -30,7 +31,7 @@ Notes:
 - The scripts auto-load `.env` from the CWD and project root.
 - If your key doesn’t have access to certain models, set `OPENAI_MODEL` to one you can use (e.g., `gpt-4o-mini`).
 
-## 3) Folder Layout (A1)
+## 3) Part A Folder Layout (A1)
 
 ```
 Assignment/A1/
@@ -177,7 +178,6 @@ This script iterates over six prompt types, calls the OpenAI API, and outputs:
 - Aggregate results in outputs/summary_results.csv
     
 
-  
 
 ### **Summary Results**
 
