@@ -35,18 +35,32 @@ Notes:
 ## 3) Part A Folder Layout (A1)
 
 ```
-Assignment/A1/
+PartA/
+  Part A report.md
   task1_medical_summarizer.py
   task2_sentiment_runner.py
   task3_constraint_creator.py
+  
   task1_cases/
     case1.md ... case5.md
+  task2_cardib_cleared_assaulting_replies.csv
   outputs/
     task1/  # report + JSON runs
     task2/  # report + JSON runs
     task3/  # report + JSON runs
   README.md
 ```
+
+
+---
+
+### **Dataset**
+
+- **Task 1:** Five open-access medical case reports (`task1_cases/`)  
+- **Task 2:** `task2_cardib_cleared_assaulting_replies.csv` — 40 X.com comments (20 positive, 10 neutral, 10 negative) related to Cardi B’s court case  
+- **Task 3:** No external dataset; generation-only creative writing task with constraints
+
+
 
 ## 4) How to Run
 
@@ -107,17 +121,6 @@ Outputs:
 - Raw JSON runs: `outputs/task3/*.json`
 
 Tip: Use `-h` on any script to see available flags.
-
-## 5) Troubleshooting
-
-- `[WARN] OPENAI_API_KEY is not set.`
-  - Ensure `.env` is present and contains a valid key; restart the shell if needed.
-- `RuntimeError: OpenAI client not installed.`
-  - `python3 -m pip install --upgrade openai python-dotenv`
-- `APIRemovedInV1` about `openai.ChatCompletion`
-  - Scripts use the v1 client; ensure you’re running the provided scripts unmodified.
-- `Permission denied` when executing a `.py`
-  - Run with `python3 script.py` instead of trying to execute the file directly.
 
 ## 6) Notes
 
