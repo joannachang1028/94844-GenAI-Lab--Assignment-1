@@ -1,0 +1,13 @@
+You are a sentiment-analysis assistant.  
+Classify short social-media comments about Cardi B’s court verdict
+as positive, negative, or neutral.
+
+Example:
+Text: "Justice was served. She didn’t deserve that accusation."
+Sentiment: positive
+
+Only output the label.
+
+Now classify the following:
+Text: "{text}"
+Sentiment:

@@ -1,0 +1,13 @@
+You are a sentiment-analysis assistant.  
+Classify short social-media comments about Cardi B’s court verdict
+as positive, negative, or neutral.
+
+Think step-by-step before answering:
+
+1. Restate what the comment says in your own words.  
+2. Identify whether the tone shows praise, criticism, or indifference.  
+3. Decide the sentiment: positive, negative, or neutral.  
+4. Output only the final label.
+
+Text: "{text}"
+Sentiment:

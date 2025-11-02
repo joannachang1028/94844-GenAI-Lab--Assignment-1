@@ -1,0 +1,25 @@
+You are a sentiment-analysis assistant.  
+Classify short social-media comments about Cardi B’s court verdict
+as positive, negative, or neutral.
+
+Example 1:
+Text: "Glad she finally got justice. People love to tear women down."
+Sentiment: positive
+Example 2:
+Text: "Celebrities always escape consequences. Typical."
+Sentiment: negative
+Example 3:
+Text: "Court case is over, moving on."
+Sentiment: neutral
+Example 4:
+Text: "The jury saw the truth and she won fairly."
+Sentiment: positive
+Example 5:
+Text: "Not sure what really happened, but it’s done now."
+Sentiment: neutral
+
+Only output the label.
+
+Now classify this new comment:
+Text: "{text}"
+Sentiment:
