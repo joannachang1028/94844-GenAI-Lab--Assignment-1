@@ -10,7 +10,7 @@ Purpose
 Usage
   python Assignment/A1/task1_medical_summarizer.py \
     --input_dir Assignment/A1/task1_cases \
-    --model ${OPENAI_MODEL:-gpt-4o-mini} \
+    --model ${OPENAI_MODEL:-gpt-5-mini} \
     --temperature 0.3 \
     --max_tokens 800 \
     --output_dir Assignment/A1/outputs/task1 \
@@ -26,6 +26,16 @@ from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
+
+# 添加时区支持
+try:
+    from zoneinfo import ZoneInfo  # Python 3.9+
+except ImportError:
+    # Python < 3.9 fallback
+    try:
+        from backports.zoneinfo import ZoneInfo
+    except ImportError:
+        ZoneInfo = None  # type: ignore[assignment, misc]
 
 try:
     from dotenv import load_dotenv
@@ -71,8 +81,21 @@ def load_env() -> None:
         pass
 
 
-def coalesce_model() -> str:
-    return os.getenv("OPENAI_MODEL") or "gpt-4o-mini"
+def coalesce_model() -> Optional[str]:
+    """Get model from environment variable, or None if not set."""
+    return os.getenv("OPENAI_MODEL")
+
+
+def get_est_now() -> datetime:
+    """Get current time in EST/EDT (America/New_York timezone)."""
+    if ZoneInfo is not None:
+        est_time = datetime.now(ZoneInfo("America/New_York"))
+        return est_time
+    else:
+        # Fallback: use UTC if zoneinfo not available
+        import warnings
+        warnings.warn("zoneinfo not available, using UTC instead of EST")
+        return datetime.utcnow()
 
 
 def ensure_dir(path: Path) -> None:
@@ -164,8 +187,6 @@ def call_openai_response(model: str, prompt: str, temperature: float, max_tokens
         result = client.responses.create(
             model=model,
             input=prompt,
-            temperature=temperature,
-            max_output_tokens=max_tokens,
         )
         try:
             return result.output_text  # type: ignore[attr-defined]
@@ -180,8 +201,7 @@ def call_openai_response(model: str, prompt: str, temperature: float, max_tokens
         result = client.chat.completions.create(
             model=model,
             messages=[{"role": "user", "content": prompt}],
-            temperature=temperature,
-            max_tokens=max_tokens,
+            max_completion_tokens=max_tokens,
         )
         return result.choices[0].message.content or ""
     except Exception as e2:
@@ -196,12 +216,12 @@ def render_report(
     outputs: Dict[str, Dict[str, str]],
 ) -> None:
     ensure_dir(report_path.parent)
-    ts = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%SZ")
+    ts = get_est_now().strftime("%Y-%m-%d %H:%M:%S %Z")
 
     header = f"""
 # Part A - Task 1: Medical Case Summarization (Experiment Report)
 
-**Timestamp (UTC)**: {ts}
+**Timestamp (EST)**: {ts}
 
 ## 0. Run Config
 - Model: {run_config.model}
@@ -350,7 +370,7 @@ Model Output
 ```bash
 python Assignment/A1/task1_medical_summarizer.py \
   --input_dir Assignment/A1/task1_cases \
-  --model gpt-4o-mini \
+  --model gpt-5-mini \
   --temperature 0.3 \
   --max_tokens 800 \
   --output_dir Assignment/A1/outputs/task1 \
@@ -397,17 +417,38 @@ def write_raw_outputs(
     variants: List[Dict[str, str]],
     outputs: Dict[str, Dict[str, str]],
 ) -> None:
+    """
+    Write JSON files for each case to outputs/task1/task1_runs/.
+    
+    Each JSON file contains all 5 prompt variants' outputs for one case.
+    File naming: {timestamp}_{case_name}.json
+    """
     if not outputs:
+        print("[Task1] No outputs to write (use --execute to generate outputs)", flush=True)
         return
+    # Output structure: outputs/task1/task1_runs/
     raw_dir = output_dir / "task1_runs"
     ensure_dir(raw_dir)
-    ts = datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
+    # Clean up previous JSON files so each run produces a fresh set
+    old_files = list(raw_dir.glob("*.json"))
+    if old_files:
+        print(f"[Task1] Cleaning up {len(old_files)} old JSON files...", flush=True)
+        for old_file in old_files:
+            try:
+                old_file.unlink()
+                print(f"[Task1] Deleted: {old_file.name}", flush=True)
+            except Exception as e:
+                print(f"[Task1] Warning: Could not delete {old_file.name}: {e}", flush=True)
+    ts = get_est_now().strftime("%Y%m%dT%H%M%S")
+    tz_name = get_est_now().strftime("%Z")
+    print(f"[Task1] Writing JSON files with EST timestamp: {ts} ({tz_name})", flush=True)
     for case_path, _ in cases:
         per_case = outputs.get(case_path.name, {})
         record = {
             "case": case_path.name,
             "variants": [],
-            "timestamp_utc": ts,
+            "timestamp_est": ts,
+            "timezone": tz_name,
         }
         for v in variants:
             vid = v["id"]
@@ -420,23 +461,44 @@ def write_raw_outputs(
                     "output": per_case.get(vid, ""),
                 }
             )
-        (raw_dir / f"{ts}_{case_path.stem}.json").write_text(
+        output_file = raw_dir / f"{ts}_{case_path.stem}.json"
+        output_file.write_text(
             json.dumps(record, ensure_ascii=False, indent=2), encoding="utf-8"
         )
+        print(f"[Task1] Written: {output_file.name}", flush=True)
+
+
+def get_default_paths() -> Tuple[str, str]:
+    """Get default input and output directories based on script location."""
+    script_path = Path(__file__).resolve()
+    script_dir = script_path.parent  # PartA/
+    project_root = script_dir.parent  # A1/
+    input_dir = str(script_dir / "task1_cases")
+    output_dir = str(script_dir / "outputs" / "task1")
+    return input_dir, output_dir
 
 
 def parse_args() -> argparse.Namespace:
+    default_input, default_output = get_default_paths()
+    default_model = coalesce_model() or "gpt-5-mini"
+    
     p = argparse.ArgumentParser(description="Part A Task 1 - Medical Case Report Summarizer")
-    p.add_argument("--input_dir", type=str, default="Assignment/A1/task1_cases", help="Directory with .txt/.md case files")
-    p.add_argument("--model", type=str, default=coalesce_model(), help="OpenAI model name (default from OPENAI_MODEL or gpt-4o-mini)")
+    p.add_argument("--input_dir", type=str, default=default_input, help="Directory with .txt/.md case files")
+    p.add_argument("--model", type=str, default=default_model, help="OpenAI model name (default from OPENAI_MODEL or gpt-5-mini)")
     p.add_argument("--temperature", type=float, default=0.3, help="Sampling temperature")
     p.add_argument("--max_tokens", type=int, default=800, help="Maximum tokens for generation")
-    p.add_argument("--output_dir", type=str, default="Assignment/A1/outputs/task1", help="Report/output directory")
+    p.add_argument("--output_dir", type=str, default=default_output, help="Report/output directory")
     p.add_argument("--execute", action="store_true", help="If set, actually call the API")
     return p.parse_args()
 
 
 def main() -> None:
+    """
+    Main execution flow:
+    1. Read medical cases from task1_cases/ directory
+    2. Generate JSON files to outputs/task1/task1_runs/ (one per case)
+    3. Generate report to outputs/task1/task1_report.md
+    """
     load_env()
     args = parse_args()
     input_dir = Path(args.input_dir)
@@ -464,8 +526,18 @@ def main() -> None:
 
     variants = build_prompt_variants()
     outputs = run_variants(run_config, cases, variants)
+    
+    # Verify EST timezone is being used
+    if ZoneInfo is None:
+        print("[Task1] WARNING: zoneinfo not available, timestamps will be UTC instead of EST", flush=True)
+    else:
+        est_now = get_est_now()
+        print(f"[Task1] Using EST timezone: {est_now.strftime('%Y-%m-%d %H:%M:%S %Z')}", flush=True)
+    
+    # Write JSON files: outputs/task1/task1_runs/{timestamp}_{case}.json
     write_raw_outputs(output_dir, cases, variants, outputs)
 
+    # Write report: outputs/task1/task1_report.md
     report_path = output_dir / "task1_report.md"
     render_report(report_path, run_config, cases, variants, outputs)
 
