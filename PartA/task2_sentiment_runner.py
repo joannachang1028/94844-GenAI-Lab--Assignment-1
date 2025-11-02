@@ -9,7 +9,7 @@ Purpose
 Usage
   python Assignment/A1/task2_sentiment_runner.py \
     --input_csv Assignment/A1/task2_comments.csv \
-    --model ${OPENAI_MODEL:-gpt-4o-mini} \
+    --model ${OPENAI_MODEL:-gpt-5-mini} \
     --temperature 0.2 \
     --max_tokens 200 \
     --output_dir Assignment/A1/outputs/task2 \
@@ -26,6 +26,16 @@ from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
+
+# 添加时区支持
+try:
+    from zoneinfo import ZoneInfo  # Python 3.9+
+except ImportError:
+    # Python < 3.9 fallback
+    try:
+        from backports.zoneinfo import ZoneInfo
+    except ImportError:
+        ZoneInfo = None  # type: ignore[assignment, misc]
 
 try:
     from dotenv import load_dotenv
@@ -70,8 +80,20 @@ def load_env() -> None:
         pass
 
 
-def coalesce_model() -> str:
-    return os.getenv("OPENAI_MODEL") or "gpt-4o-mini"
+def coalesce_model() -> Optional[str]:
+    return os.getenv("OPENAI_MODEL")
+
+
+def get_est_now() -> datetime:
+    """Get current time in EST/EDT (America/New_York timezone)."""
+    if ZoneInfo is not None:
+        est_time = datetime.now(ZoneInfo("America/New_York"))
+        return est_time
+    else:
+        # Fallback: use UTC if zoneinfo not available
+        import warnings
+        warnings.warn("zoneinfo not available, using UTC instead of EST")
+        return datetime.utcnow()
 
 
 def ensure_dir(p: Path) -> None:
@@ -154,13 +176,12 @@ def call_openai_response(model: str, prompt: str, temperature: float, max_tokens
     if not _HAS_OPENAI:
         raise RuntimeError("OpenAI client not installed. `pip install --upgrade openai python-dotenv`.")
     client = OpenAI()
+    # Try Responses API first, then Chat Completions (v1)
     first_error: Optional[Exception] = None
     try:
         result = client.responses.create(
             model=model,
             input=prompt,
-            temperature=temperature,
-            max_output_tokens=max_tokens,
         )
         try:
             return result.output_text  # type: ignore[attr-defined]
@@ -175,8 +196,7 @@ def call_openai_response(model: str, prompt: str, temperature: float, max_tokens
         result = client.chat.completions.create(
             model=model,
             messages=[{"role": "user", "content": prompt}],
-            temperature=temperature,
-            max_tokens=max_tokens,
+            max_completion_tokens=max_tokens,
         )
         return result.choices[0].message.content or ""
     except Exception as e2:
@@ -203,22 +223,30 @@ def predict(
     variants: List[Dict[str, str]],
 ) -> Dict[str, List[Dict[str, Any]]]:
     predictions: Dict[str, List[Dict[str, Any]]] = {v["id"]: [] for v in variants}
-    if not run_config.execute or not rows:
+    if not run_config.execute:
+        print(f"[Task2] Not executing API calls (--execute flag not set)", flush=True)
+        return predictions
+    if not rows:
+        print("[Task2] No rows to process", flush=True)
         return predictions
 
-    for r in rows:
+    print(f"[Task2] Processing {len(rows)} rows with {len(variants)} variants...", flush=True)
+    for idx, r in enumerate(rows, 1):
         text = r.get("text", "")
         for v in variants:
             prompt = v["prompt_template"].format(text=text)
             try:
+                print(f"[Task2] Running row {idx}/{len(rows)} / {v['id']} ...", flush=True)
                 out = call_openai_response(
                     model=run_config.model,
                     prompt=prompt,
                     temperature=run_config.temperature,
                     max_tokens=run_config.max_tokens,
                 )
+                print(f"[Task2] Done row {idx}/{len(rows)} / {v['id']}", flush=True)
             except Exception as e:
                 out = f"[ERROR] {type(e).__name__}: {e}"
+                print(f"[Task2] ERROR on row {idx}/{len(rows)} / {v['id']}: {e}", flush=True)
 
             rec: Dict[str, Any] = {"text": text, "raw": out}
             if v["id"] == "v4_intensity":
@@ -226,6 +254,7 @@ def predict(
                 rec.update({"score": score, "reason": reason})
             predictions[v["id"]].append(rec)
 
+    print(f"[Task2] Completed processing {len(rows)} rows", flush=True)
     return predictions
 
 
@@ -270,11 +299,11 @@ def render_report(
     predictions: Dict[str, List[Dict[str, Any]]],
 ) -> None:
     ensure_dir(report_path.parent)
-    ts = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%SZ")
+    ts = get_est_now().strftime("%Y-%m-%d %H:%M:%S %Z")
     header = f"""
 # Part A - Task 2: Sentiment Analysis (Experiment Report)
 
-**Timestamp (UTC)**: {ts}
+**Timestamp (EST)**: {ts}
 
 ## 0. Run Config
 - Model: {run_config.model}
@@ -393,7 +422,7 @@ def render_report(
 ```bash
 python Assignment/A1/task2_sentiment_runner.py \
   --input_csv Assignment/A1/task2_comments.csv \
-  --model gpt-4o-mini \
+  --model gpt-5-mini \
   --temperature 0.2 \
   --max_tokens 200 \
   --output_dir Assignment/A1/outputs/task2 \
@@ -406,23 +435,52 @@ python Assignment/A1/task2_sentiment_runner.py \
 
 def write_raw_predictions(output_dir: Path, predictions: Dict[str, List[Dict[str, Any]]]) -> None:
     if not predictions:
+        print("[Task2] No predictions to write (use --execute to generate predictions)", flush=True)
         return
     raw_dir = output_dir / "task2_runs"
     ensure_dir(raw_dir)
-    ts = datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
+    
+    # Clean up previous JSON files so each run produces a fresh set
+    old_files = list(raw_dir.glob("*.json"))
+    if old_files:
+        print(f"[Task2] Cleaning up {len(old_files)} old JSON files...", flush=True)
+        for old_file in old_files:
+            try:
+                old_file.unlink()
+                print(f"[Task2] Deleted: {old_file.name}", flush=True)
+            except Exception as e:
+                print(f"[Task2] Warning: Could not delete {old_file.name}: {e}", flush=True)
+    
+    ts = get_est_now().strftime("%Y%m%dT%H%M%S")
+    tz_name = get_est_now().strftime("%Z")
+    print(f"[Task2] Writing JSON files with EST timestamp: {ts} ({tz_name})", flush=True)
     for vid, recs in predictions.items():
-        (raw_dir / f"{ts}_{vid}.json").write_text(
+        output_file = raw_dir / f"{ts}_{vid}.json"
+        output_file.write_text(
             json.dumps(recs, ensure_ascii=False, indent=2), encoding="utf-8"
         )
+        print(f"[Task2] Written: {output_file.name}", flush=True)
+
+
+def get_default_paths() -> Tuple[str, str]:
+    """Get default input and output directories based on script location."""
+    script_path = Path(__file__).resolve()
+    script_dir = script_path.parent  # PartA/
+    input_csv = str(script_dir / "task2_cardib_cleared_assaulting_replies.csv")
+    output_dir = str(script_dir / "outputs" / "task2")
+    return input_csv, output_dir
 
 
 def parse_args() -> argparse.Namespace:
+    default_model = coalesce_model() or "gpt-5-mini"
+    default_input, default_output = get_default_paths()
+    
     p = argparse.ArgumentParser(description="Part A Task 2 - Sentiment Analysis Runner")
-    p.add_argument("--input_csv", type=str, default="Assignment/A1/task2_comments.csv", help="CSV with columns: text[, label, source, timestamp]")
-    p.add_argument("--model", type=str, default=coalesce_model(), help="OpenAI model (default from OPENAI_MODEL or gpt-4o-mini)")
+    p.add_argument("--input_csv", type=str, default=default_input, help="CSV with columns: text[, label, source, timestamp]")
+    p.add_argument("--model", type=str, default=default_model, help="OpenAI model (default from OPENAI_MODEL or gpt-5-mini)")
     p.add_argument("--temperature", type=float, default=0.2, help="Sampling temperature")
     p.add_argument("--max_tokens", type=int, default=200, help="Max tokens")
-    p.add_argument("--output_dir", type=str, default="Assignment/A1/outputs/task2", help="Output directory")
+    p.add_argument("--output_dir", type=str, default=default_output, help="Output directory")
     p.add_argument("--execute", action="store_true", help="If set, actually call the API")
     return p.parse_args()
 
@@ -450,6 +508,18 @@ def main() -> None:
         rows = read_comments(run_config.input_csv)
 
     variants = build_prompt_variants()
+    
+    # Verify EST timezone is being used
+    if ZoneInfo is None:
+        print("[Task2] WARNING: zoneinfo not available, timestamps will be UTC instead of EST", flush=True)
+    else:
+        est_now = get_est_now()
+        print(f"[Task2] Using EST timezone: {est_now.strftime('%Y-%m-%d %H:%M:%S %Z')}", flush=True)
+    
+    if not run_config.execute:
+        print("[Task2] WARNING: --execute flag not set. No API calls will be made and files will not be updated.", flush=True)
+        print("[Task2] To generate new predictions, run with: python PartA/task2_sentiment_runner.py --execute", flush=True)
+    
     predictions = predict(run_config, rows, variants)
     write_raw_predictions(output_dir, predictions)
 

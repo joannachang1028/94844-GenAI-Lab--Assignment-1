@@ -27,7 +27,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
-# 添加时区支持
+# Add timezone support
 try:
     from zoneinfo import ZoneInfo  # Python 3.9+
 except ImportError:
