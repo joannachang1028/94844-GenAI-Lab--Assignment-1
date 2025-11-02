@@ -15,19 +15,22 @@ This report documents experiments across three distinct tasks—medical case sum
 
 ### Task 1: Medical Case Summarization
 **Objective**: Summarize medical case reports with accurate clinical information extraction.  
-**Model Configuration**: GPT-5-mini, Temperature: 0.3, Max Tokens: 800  
+**Model Configuration**: GPT-5-mini, Max Tokens: 800  
+**Note**: GPT-5-mini does not support temperature parameter; experiments used default model temperature  
 **Dataset**: 5 medical case reports from public sources  
 **Metrics**: Coverage (%), Hallucination risk (Low/Med/High), Clarity (1-5), Structure (1-5)
 
 ### Task 2: Sentiment Analysis
 **Objective**: Classify sentiment of social media comments (positive, negative, neutral).  
-**Model Configuration**: GPT-5-mini, Temperature: 0.2, Max Tokens: 200  
+**Model Configuration**: GPT-5-mini, Max Tokens: 200  
+**Note**: GPT-5-mini does not support temperature parameter; experiments used default model temperature  
 **Dataset**: 20 comments from X.com about "Cardi B cleared of assaulting security guard"  
 **Metrics**: Macro F1, Macro Precision, Macro Recall (with ground-truth labels)
 
 ### Task 3: Constraint-Based Creative Writing
 **Objective**: Generate creative stories adhering to strict structural and stylistic constraints.  
-**Model Configuration**: GPT-4o-mini, Temperature: 0.7, Max Tokens: 800  
+**Model Configuration**: GPT-5-mini, Max Tokens: 800  
+**Note**: GPT-5-mini does not support temperature parameter; experiments used default model temperature  
 **Dataset**: Single constraint specification (word count, keywords, forbidden words, style, tone)  
 **Metrics**: Constraint satisfaction, creativity, coherence, fluency, style match (qualitative)
 
@@ -213,14 +216,14 @@ This report documents experiments across three distinct tasks—medical case sum
 
 ### 5.5 Temperature and Task Type Interaction
 
-**Pattern**: Lower temperatures (0.2-0.3) for factual tasks; higher temperatures (0.7) for creative tasks produced better results.
+**Pattern**: All tasks used GPT-5-mini, which does not support temperature parameter configuration. Despite using default model temperature across all tasks (factual, classification, and creative), we observed task-appropriate behavior.
 
 **Evidence**:
-- Task 1 (0.3): Produced accurate, factual summaries with low hallucination.
-- Task 2 (0.2): Achieved consistent classification with high precision.
-- Task 3 (0.7): Generated creative, varied stories while maintaining constraint adherence.
+- Task 1 (GPT-5-mini, default temp): Produced accurate, factual summaries with low hallucination despite no temperature control.
+- Task 2 (GPT-5-mini, default temp): Achieved consistent classification with high precision using default model settings.
+- Task 3 (GPT-5-mini, default temp): Generated creative, varied stories while maintaining constraint adherence despite no explicit temperature control.
 
-**Insight**: Temperature should match task requirements: deterministic tasks need lower temperature for consistency; creative tasks need higher temperature for variation while still respecting constraints.
+**Insight**: For models without temperature control (like GPT-5-mini used in all three tasks), prompt design and explicit constraints are critical for achieving desired output characteristics. Structured prompts with clear constraints enabled the model to produce appropriate outputs for both factual (Task 1, 2) and creative (Task 3) tasks, demonstrating that well-designed prompts can compensate for lack of temperature tuning.
 
 ### 5.6 Context-Specific Guidance Outperforms Generic Instructions
 
@@ -300,10 +303,14 @@ Based on our experimentation across three diverse tasks, we propose the followin
 
 ### 6.5 Model Configuration Principles
 
-11. **Match Temperature to Task Type**
-    - Factual/extraction tasks: 0.2-0.4 (Task 1: 0.3, Task 2: 0.2)
-    - Creative tasks: 0.7-0.9 (Task 3: 0.7)
-    - Balance creativity with constraint adherence
+11. **Temperature Control When Available**
+    - Note: GPT-5-mini (used in all three tasks) does not support temperature parameter configuration
+    - For models without temperature control (GPT-5-mini):
+      - Rely on prompt design, explicit constraints, and structured outputs to guide behavior
+      - Well-structured prompts can achieve task-appropriate outputs for both factual and creative tasks
+    - For models that support temperature (e.g., GPT-4o-mini, GPT-4):
+      - Factual/extraction tasks: 0.2-0.4 for consistency
+      - Creative tasks: 0.7-0.9 for variation while respecting constraints
 
 12. **Set Appropriate Max Tokens**
     - Too low: Truncated outputs, incomplete information
@@ -333,19 +340,19 @@ Based on our experimentation across three diverse tasks, we propose the followin
 ### Medical Case Summarization
 - **Best Variant**: V1 (Structured Summary) or V3 (SOAP Format)
 - **Rationale**: High coverage (100%), low hallucination, familiar clinical structure
-- **Temperature**: 0.3 (factual, deterministic)
+- **Model**: GPT-5-mini (default temperature; parameter not supported)
 - **Key Practice**: Use explicit section headings + "do not speculate" instruction
 
 ### Sentiment Analysis
 - **Best Variant**: V2 (Rules Enhanced) or V3 (Label Definitions)
 - **Rationale**: Highest F1 (0.857), handles edge cases (negation, sarcasm, emoji)
-- **Temperature**: 0.2 (classification task, low variability needed)
+- **Model**: GPT-5-mini (default temperature; parameter not supported)
 - **Key Practice**: Include rules for common failure modes (negation, sarcasm)
 
 ### Constraint-Based Creative Writing
 - **Best Variant**: V2 (Story + Self-Check JSON) or V5 (Story + Checklist)
 - **Rationale**: Provides verification mechanisms while maintaining readability
-- **Temperature**: 0.7 (creative variation within constraints)
+- **Model**: GPT-5-mini (default temperature; parameter not supported)
 - **Key Practice**: Require self-check output for automated constraint validation
 
 ---
@@ -375,9 +382,9 @@ Our experimentation across three diverse tasks reveals consistent patterns in ef
 2. **Guidance reduces failures**: Task-specific rules and definitions address edge cases proactively.
 3. **Format enables evaluation**: Structured outputs (JSON, sections) enable automated analysis.
 4. **Self-awareness helps**: Metacognitive prompts reduce overconfidence and improve quality.
-5. **Configuration matters**: Temperature and token limits must match task requirements.
+5. **Configuration matters**: Token limits must match task requirements. For models that support it, temperature should align with task type (lower for factual tasks, higher for creative tasks). However, for models without temperature control (like GPT-5-mini used in this study), well-designed prompts can achieve appropriate task behavior through explicit constraints.
 
-The most effective prompts combine **explicit structure**, **task-specific guidance**, and **clear constraints**, while matching **model configuration** to task type. These principles provide a foundation for designing effective prompts across diverse applications.
+The most effective prompts combine **explicit structure**, **task-specific guidance**, and **clear constraints**, while matching **model configuration** to task type. These principles provide a foundation for designing effective prompts across diverse applications, even when model parameters cannot be directly controlled.
 
 ---
 
