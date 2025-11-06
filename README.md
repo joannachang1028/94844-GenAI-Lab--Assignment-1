@@ -139,7 +139,7 @@ Find more in Part A report.md
     
 
 
-## 7) Part B — Few-Shot / Zero-Shot / Chain-of-Thought Prompting Experiments
+## 4) Part B — Few-Shot / Zero-Shot / Chain-of-Thought Prompting Experiments
 
   
 
